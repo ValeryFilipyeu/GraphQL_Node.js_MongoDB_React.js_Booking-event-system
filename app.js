@@ -12,6 +12,36 @@ const app = express();
 
 app.use(bodyParser.json());
 
+const events = eventIds => {
+  return Event.find({ _id: { $in: eventIds } })
+    .then(events => {
+      return events.map(event => {
+        return {
+          ...event._doc,
+          _id: event.id,
+          creator: user.bind(this, event.creator)
+        };
+      });
+    })
+    .catch(err => {
+      throw err;
+    });
+};
+
+const user = userId => {
+  return User.findById(userId)
+    .then(user => {
+      return {
+        ...user._doc,
+        _id: user.id,
+        createdEvents: events.bind(this, user._doc.createdEvents)
+      };
+    })
+    .catch(err => {
+      throw err;
+    });
+};
+
 app.use(
   "/graphql",
   graphqlHttp({
@@ -22,12 +52,14 @@ app.use(
           description: String!
           price: Float!
           date: String!
+          creator: User!
         }
         
         type User {
           _id: ID!
           email: String!
           password: String
+          createdEvents: [Event!]
         }
         
         input EventInput {
@@ -61,7 +93,8 @@ app.use(
             return events.map(event => {
               return {
                 ...event._doc,
-                _id: event.id
+                _id: event.id,
+                creator: user.bind(this, event._doc.creator)
               };
             });
           })
@@ -75,18 +108,18 @@ app.use(
           description: args.eventInput.description,
           price: +args.eventInput.price,
           date: new Date(args.eventInput.date),
-          creator: '5daeec8296e9d85ef81ca349'
+          creator: "5daeec8296e9d85ef81ca349"
         });
         let createdEvent;
         return event
           .save()
           .then(result => {
-            createdEvent = { ...result._doc, _id: result._doc._id.toString() };
-            return User.findById('5daeec8296e9d85ef81ca349');
+            createdEvent = { ...result._doc, _id: result._doc._id.toString(), creator: user.bind(this, result._doc.creator) };
+            return User.findById("5daeec8296e9d85ef81ca349");
           })
           .then(user => {
             if (!user) {
-              throw new Error('User not found.');
+              throw new Error("User not found.");
             }
             user.createdEvents.push(event);
             return user.save();
@@ -100,10 +133,10 @@ app.use(
           });
       },
       createUser: args => {
-        return User.findOne({email: args.userInput.email})
+        return User.findOne({ email: args.userInput.email })
           .then(user => {
             if (user) {
-              throw new Error('User exists already.');
+              throw new Error("User exists already.");
             }
             return bcrypt.hash(args.userInput.password, 12);
           })
