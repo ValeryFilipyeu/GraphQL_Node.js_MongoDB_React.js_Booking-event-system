@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
@@ -6,11 +6,11 @@ const bookingSchema = new Schema(
   {
     event: {
       type: Schema.Types.ObjectId,
-      ref: "Event"
+      ref: 'Event'
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User"
+      ref: 'User'
     }
   },
   { timestamps: true }

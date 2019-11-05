@@ -12,7 +12,6 @@ const userSchema = new Schema({
     required: true
   },
   createdEvents: [
-    // It is not the object here, it's just a field data
     {
       type: Schema.Types.ObjectId,
       ref: 'Event'
