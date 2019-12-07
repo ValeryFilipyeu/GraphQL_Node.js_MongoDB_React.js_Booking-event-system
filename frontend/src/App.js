@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
-import AuthPage from "./pages/Auth";
-import BookingsPage from "./pages/Bookings";
-import EventsPage from "./pages/Events";
-import MainNavigation from "./components/Navigation/MainNavigation";
-import AuthContext from "./context/auth-context";
+import AuthPage from './pages/Auth';
+import BookingsPage from './pages/Bookings';
+import EventsPage from './pages/Events';
+import MainNavigation from './components/Navigation/MainNavigation';
+import AuthContext from './context/auth-context';
 
-import "./App.css";
+import './App.css';
 
 class App extends Component {
   state = {
@@ -16,7 +16,7 @@ class App extends Component {
   };
 
   login = (token, userId, tokenExpiration) => {
-    this.setState({ token, userId });
+    this.setState({ token: token, userId: userId });
   };
 
   logout = () => {
@@ -26,7 +26,7 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <>
+        <React.Fragment>
           <AuthContext.Provider
             value={{
               token: this.state.token,
@@ -39,7 +39,9 @@ class App extends Component {
             <main className="main-content">
               <Switch>
                 {this.state.token && <Redirect from="/" to="/events" exact />}
-                {this.state.token && <Redirect from="/auth" to="/events" exact />}
+                {this.state.token && (
+                  <Redirect from="/auth" to="/events" exact />
+                )}
                 {!this.state.token && (
                   <Route path="/auth" component={AuthPage} />
                 )}
@@ -51,7 +53,7 @@ class App extends Component {
               </Switch>
             </main>
           </AuthContext.Provider>
-        </>
+        </React.Fragment>
       </BrowserRouter>
     );
   }

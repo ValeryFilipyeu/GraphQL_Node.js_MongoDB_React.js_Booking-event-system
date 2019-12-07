@@ -1,28 +1,25 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import Modal from "../components/Modal/Modal";
-import Backdrop from "../components/Backdrop/Backdrop";
-
-import AuthContext from "../context/auth-context";
-
-import "./Events.css";
+import Modal from '../components/Modal/Modal';
+import Backdrop from '../components/Backdrop/Backdrop';
+import AuthContext from '../context/auth-context';
+import './Events.css';
 
 class EventsPage extends Component {
+  state = {
+    creating: false,
+    events: []
+  };
+
+  static contextType = AuthContext;
+
   constructor(props) {
     super(props);
-
-    this.state = {
-      creating: false,
-      events: []
-    };
-
     this.titleElRef = React.createRef();
     this.priceElRef = React.createRef();
     this.dateElRef = React.createRef();
     this.descriptionElRef = React.createRef();
   }
-
-  static contextType = AuthContext;
 
   componentDidMount() {
     this.fetchEvents();
@@ -34,7 +31,6 @@ class EventsPage extends Component {
 
   modalConfirmHandler = () => {
     this.setState({ creating: false });
-
     const title = this.titleElRef.current.value;
     const price = +this.priceElRef.current.value;
     const date = this.dateElRef.current.value;
@@ -50,38 +46,39 @@ class EventsPage extends Component {
     }
 
     const event = { title, price, date, description };
+    console.log(event);
 
     const requestBody = {
       query: `
-        mutation {
-          createEvent(eventInput: {title: "${title}", description: "${description}"}, price: ${price}, date: "${date}") {
-            _id
-            title
-            description
-            date
-            price
-            creator {
+          mutation {
+            createEvent(eventInput: {title: "${title}", description: "${description}", price: ${price}, date: "${date}"}) {
               _id
-              email
+              title
+              description
+              date
+              price
+              creator {
+                _id
+                email
+              }
             }
           }
-        }
-      `
+        `
     };
 
     const token = this.context.token;
 
-    fetch("http://localhost:8000/graphql", {
-      method: "POST",
+    fetch('http://localhost:8000/graphql', {
+      method: 'POST',
       body: JSON.stringify(requestBody),
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer" + token
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
       }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Failed!");
+          throw new Error('Failed!');
         }
         return res.json();
       })
@@ -100,34 +97,32 @@ class EventsPage extends Component {
   fetchEvents() {
     const requestBody = {
       query: `
-        query {
-          events {
-            _id
-            title
-            description
-            date
-            price
-            creator {
+          query {
+            events {
               _id
-              email
+              title
+              description
+              date
+              price
+              creator {
+                _id
+                email
+              }
             }
           }
-        }
-      `
+        `
     };
 
-    const token = this.context.token;
-
-    fetch("http://localhost:8000/graphql", {
-      method: "POST",
+    fetch('http://localhost:8000/graphql', {
+      method: 'POST',
       body: JSON.stringify(requestBody),
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Failed!");
+          throw new Error('Failed!');
         }
         return res.json();
       })
@@ -141,7 +136,7 @@ class EventsPage extends Component {
   }
 
   render() {
-    const eventsList = this.state.events.map(event => {
+    const eventList = this.state.events.map(event => {
       return (
         <li key={event._id} className="events__list-item">
           {event.title}
@@ -150,7 +145,7 @@ class EventsPage extends Component {
     });
 
     return (
-      <>
+      <React.Fragment>
         {this.state.creating && <Backdrop />}
         {this.state.creating && (
           <Modal
@@ -192,8 +187,8 @@ class EventsPage extends Component {
             </button>
           </div>
         )}
-        <ul className="events__list">{eventsList}</ul>
-      </>
+        <ul className="events__list">{eventList}</ul>
+      </React.Fragment>
     );
   }
 }
