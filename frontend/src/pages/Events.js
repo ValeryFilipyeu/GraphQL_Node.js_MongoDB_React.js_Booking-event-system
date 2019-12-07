@@ -1,25 +1,26 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import Modal from '../components/Modal/Modal';
-import Backdrop from '../components/Backdrop/Backdrop';
-import AuthContext from '../context/auth-context';
-import './Events.css';
+import Modal from "../components/Modal/Modal";
+import Backdrop from "../components/Backdrop/Backdrop";
+import AuthContext from "../context/auth-context";
+import "./Events.css";
 
 class EventsPage extends Component {
-  state = {
-    creating: false,
-    events: []
-  };
-
-  static contextType = AuthContext;
-
   constructor(props) {
     super(props);
+
+    this.state = {
+      creating: false,
+      events: []
+    };
+
     this.titleElRef = React.createRef();
     this.priceElRef = React.createRef();
     this.dateElRef = React.createRef();
     this.descriptionElRef = React.createRef();
   }
+
+  static contextType = AuthContext;
 
   componentDidMount() {
     this.fetchEvents();
@@ -68,17 +69,17 @@ class EventsPage extends Component {
 
     const token = this.context.token;
 
-    fetch('http://localhost:8000/graphql', {
-      method: 'POST',
+    fetch("http://localhost:8000/graphql", {
+      method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
       }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed!');
+          throw new Error("Failed!");
         }
         return res.json();
       })
@@ -113,16 +114,16 @@ class EventsPage extends Component {
         `
     };
 
-    fetch('http://localhost:8000/graphql', {
-      method: 'POST',
+    fetch("http://localhost:8000/graphql", {
+      method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed!');
+          throw new Error("Failed!");
         }
         return res.json();
       })
