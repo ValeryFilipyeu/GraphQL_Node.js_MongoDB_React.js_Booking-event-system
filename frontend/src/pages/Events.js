@@ -23,11 +23,16 @@ class EventsPage extends Component {
     this.dateElRef = React.createRef();
     this.descriptionElRef = React.createRef();
   }
+  isActive = true;
 
   static contextType = AuthContext;
 
   componentDidMount() {
     this.fetchEvents();
+  }
+
+  componentWillUnmount() {
+    this.isActive = false;
   }
 
   startCreateEventHandler = () => {
@@ -144,11 +149,15 @@ class EventsPage extends Component {
       })
       .then(resData => {
         const events = resData.data.events;
-        this.setState({ events: events, isLoading: false });
+        if (this.isActive) {
+          this.setState({ events: events, isLoading: false });
+        }
       })
       .catch(err => {
         console.log(err);
-        this.setState({ isLoading: false })
+        if (this.isActive) {
+          this.setState({ isLoading: false });
+        }
       });
   }
 
