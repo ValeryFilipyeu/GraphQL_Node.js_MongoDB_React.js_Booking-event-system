@@ -23,4 +23,5 @@ const modal = props => (
   </div>
 );
 
+
 export default modal;
